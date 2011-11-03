@@ -7,7 +7,7 @@ require 'sunspot/rails'
 # class Post
 #   include Mongoid::Document
 #   field :title
-# 
+#
 #   include Sunspot::Mongoid
 #   searchable do
 #     text :title
@@ -32,17 +32,19 @@ module Sunspot
 
     class DataAccessor < Sunspot::Adapters::DataAccessor
       def load(id)
-        criteria(id).first
+        return nil unless id
+        criteria([id]).first
       end
 
       def load_all(ids)
+        return [] if ids.try(:empty?)
         criteria(ids)
       end
 
       private
 
-      def criteria(id)
-        @clazz.criteria.id(id)
+      def criteria(ids)
+        @clazz.where(:_id.in => ids)
       end
     end
   end
